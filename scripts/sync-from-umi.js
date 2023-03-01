@@ -1,8 +1,10 @@
-const fs = require('fs');
 const path = require('path');
-const https = require('https');
+const fs = require('fs');
+const { Octokit } = require('@octokit/core');
 
-const UMI_DOC_DIR = path.join(__dirname, '..', 'docs', '.upstream');
+// You can use it without a token, but there is a limit on the number of times
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
 const REPLACE_MESSAGE_MDX = [
   // remove mdx component import statements
   { type: 'replace', value: [/^[^\r\n]+ from 'umi';\n*/, ''] },
@@ -22,11 +24,12 @@ const REPLACE_MESSAGE_MDX = [
     ],
   },
 ];
+
 const FILE_LIST = [
   // config docs
   {
     localname: 'config.md',
-    upstream: 'https://cdn.jsdelivr.net/gh/umijs/umi@4/docs/docs/api/config.md',
+    path: 'docs/docs/api/config.md',
     actions: [
       ...REPLACE_MESSAGE_MDX,
       // remove head content
@@ -96,7 +99,7 @@ const FILE_LIST = [
   },
   {
     localname: 'api.md',
-    upstream: 'https://cdn.jsdelivr.net/gh/umijs/umi@4/docs/docs/api/api.md',
+    path: 'docs/docs/api/api.md',
     actions: [
       ...REPLACE_MESSAGE_MDX,
       // remove head content
@@ -120,8 +123,7 @@ const FILE_LIST = [
   },
   {
     localname: 'plugin.md',
-    upstream:
-      'https://cdn.jsdelivr.net/gh/umijs/umi@4/docs/docs/guides/plugins.md',
+    path: 'docs/docs/guides/plugins.md',
     actions: [
       ...REPLACE_MESSAGE_MDX,
       // remove head content
@@ -146,8 +148,7 @@ const FILE_LIST = [
   },
   {
     localname: 'plugin-api.md',
-    upstream:
-      'https://cdn.jsdelivr.net/gh/umijs/umi@4/docs/docs/api/plugin-api.md',
+    path: 'docs/docs/api/plugin-api.md',
     actions: [
       // remove head content
       { type: 'slice', value: [6] },
@@ -185,44 +186,66 @@ const FILE_LIST = [
   },
 ];
 
-if (!fs.existsSync(UMI_DOC_DIR)) {
-  fs.mkdirSync(UMI_DOC_DIR);
+const UPSTREAM = { owner: 'umijs', repo: 'umi' };
+const UMI_DOC_DIR = path.join(__dirname, '..', 'docs', '.upstream');
+
+function getRemoteTag() {
+  return octokit.request('GET /repos/{owner}/{repo}/tags', {
+    owner: UPSTREAM.owner,
+    repo: UPSTREAM.repo,
+    per_page: 1,
+    page: 1,
+  });
 }
 
-// process files
-FILE_LIST.forEach((file) => {
-  const localPath = path.join(UMI_DOC_DIR, file.localname);
-
-  // get file from upstream
-  https.get(file.upstream, (res) => {
-    let content = '';
-
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-      content += chunk;
-    });
-    res.on('end', () => {
-      // execute process actions
-      (file.actions || []).forEach((action) => {
-        switch (action.type) {
-          case 'slice':
-            content = content
-              .split(/\n/g)
-              .slice(action.value[0], action.value[1])
-              .join('\n');
-            break;
-
-          case 'replace':
-            content = content.replace(action.value[0], action.value[1]);
-            break;
-
-          default:
-        }
-      });
-
-      // write back to file
-      fs.writeFileSync(localPath, content);
-      console.log('sync', file.localname, 'from upstream successfully!');
-    });
+function getRemoteContent(path, ref) {
+  return octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+    owner: UPSTREAM.owner,
+    repo: UPSTREAM.repo,
+    path,
+    headers: {
+      accept: 'application/vnd.github.raw',
+    },
+    ref,
   });
+}
+
+async function main() {
+  if (!fs.existsSync(UMI_DOC_DIR)) {
+    fs.mkdirSync(UMI_DOC_DIR);
+  }
+
+  const { data } = await getRemoteTag();
+  const ref = data[0].name;
+  if (!ref) {
+    throw new Error('[sync umijs docs]: no ref found');
+  }
+
+  for (const file of FILE_LIST) {
+    const { data } = await getRemoteContent(file.path, ref);
+
+    let content = data;
+    (file.actions || []).forEach((action) => {
+      switch (action.type) {
+        case 'slice':
+          content = content
+            .split(/\n/g)
+            .slice(action.value[0], action.value[1])
+            .join('\n');
+          break;
+        case 'replace':
+          content = content.replace(action.value[0], action.value[1]);
+          break;
+        default:
+      }
+    });
+
+    fs.writeFileSync(path.join(UMI_DOC_DIR, file.localname), content);
+    console.log('sync', file.localname, 'from upstream successfully!');
+  }
+}
+
+main().catch((error) => {
+  console.error('[sync umijs docs]:', error);
+  process.exit(1);
 });
