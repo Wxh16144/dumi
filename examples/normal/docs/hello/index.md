@@ -56,3 +56,19 @@ group: 测试分组
   </Identity>
 </Identity>
 ```
+
+### case 05
+
+<Identity>
+  Hello Dumi!
+  <Identity name="Awesome" div={<h2>我是 h2</h2>} />
+  <Identity name="Required<Props>" span={(<span>我是 span</span>)}></Identity>
+</Identity>
+
+```tsx | pure
+<Identity>
+  Hello Dumi!
+  <Identity name="Awesome" div={<h2>我是 h2</h2>} />
+  <Identity name="Required<Props>" span={<span>我是 span</span>}></Identity>
+</Identity>
+```

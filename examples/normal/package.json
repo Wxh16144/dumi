@@ -1,13 +1,19 @@
 {
   "name": "@examples/normal",
   "scripts": {
-    "build": "node ../../bin/dumi.js build",
-    "dev": "node ../../bin/dumi.js dev",
-    "preview": "node ../../bin/dumi.js preview",
-    "setup": "node ../../bin/dumi.js setup",
-    "start": "npm run dev"
+    "build": "node ./scripts/start.js old build",
+    "build2": "node ./scripts/start.js wuxh build",
+    "dev": "node ./scripts/start.js old dev",
+    "dev2": "node ./scripts/start.js wuxh dev",
+    "preview": "node ./scripts/start.js old preview",
+    "preview2": "node ./scripts/start.js wuxh preview",
+    "setup": "node ./scripts/start.js old setup",
+    "setup2": "node ./scripts/start.js wuxh setup"
   },
   "dependencies": {
+    "@wuxh/dumi": "2.2.8-alpha.1",
+    "del": "^4.1.0",
+    "pkg-dir": "^5.0.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
