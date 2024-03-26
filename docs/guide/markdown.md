@@ -261,6 +261,14 @@ yarn install -D dumi
 \`\`\`bash [pnpm]
 pnpm install -D dumi
 \`\`\`
+
+\`\`\`ts [.dumirc.ts]
+import { defineConfig } from 'dumi';
+
+export default defineConfig({
+  // ...
+});
+\`\`\`
 :::
 `.trim();
 
@@ -281,6 +289,14 @@ yarn install -D dumi
 
 ```bash [pnpm]
 pnpm install -D dumi
+```
+
+```ts [.dumirc.ts]
+import { defineConfig } from 'dumi';
+
+export default defineConfig({
+  // ...
+});
 ```
 
 :::
