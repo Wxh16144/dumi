@@ -1,4 +1,4 @@
-import { SourceCodeProps } from 'dumi/theme/builtins/SourceCode';
+import SourceCode from 'dumi/theme/builtins/SourceCode';
 import Tabs, { TabsProps } from 'rc-tabs';
 import toArray from 'rc-util/lib/Children/toArray';
 import React from 'react';
@@ -6,6 +6,7 @@ import './index.less';
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type Item = Unpacked<Required<TabsProps>['items']>;
+type SourceCodeProps = Parameters<typeof SourceCode>[0];
 
 function CodeGroup(props: React.PropsWithChildren) {
   const { children } = props;

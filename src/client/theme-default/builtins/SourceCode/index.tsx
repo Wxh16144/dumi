@@ -16,7 +16,7 @@ const SIMILAR_DSL: Record<string, Language> = {
   axml: 'markup',
 };
 
-export interface SourceCodeProps {
+interface SourceCodeProps {
   children: string;
   lang: Language;
   highlightLines?: number[];

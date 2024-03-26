@@ -242,25 +242,30 @@ features:
 
 需要将多代码块合并成一个分组进行展示时，可以使用 CodeGroup 语法，例如：
 
-````jsx
+```jsx
 /**
  * inline: true
  */
 import SourceCode from 'dumi/theme/builtins/SourceCode';
-const content =
-  ':::code-group \n\n' +
-  '```bash [npm]\n' +
-  'npm install -D dumi\n' +
-  '```\n\n' +
-  '```bash [yarn]\n' +
-  'yarn install -D dumi\n' +
-  '```\n\n' +
-  '```bash [pnpm]\n' +
-  'pnpm install -D dumi\n' +
-  '```\n\n' +
-  ':::';
-export default () => <SourceCode lang="md">{content}</SourceCode>;
-````
+const content = `
+:::code-group
+
+\`\`\`bash [npm]
+npm install -D dumi
+\`\`\`
+
+\`\`\`bash [yarn]
+yarn install -D dumi
+\`\`\`
+
+\`\`\`bash [pnpm]
+pnpm install -D dumi
+\`\`\`
+:::
+`.trim();
+
+export default () => <SourceCode lang="markdown">{content}</SourceCode>;
+```
 
 将会被渲染为：
 
