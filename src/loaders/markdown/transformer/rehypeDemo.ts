@@ -19,6 +19,8 @@ const DEMO_NODE_CONTAINER = '$demo-container';
 export const DEMO_PROP_VALUE_KEY = '$demo-prop-value-key';
 export const DUMI_DEMO_TAG = 'DumiDemo';
 export const DUMI_DEMO_GRID_TAG = 'DumiDemoGrid';
+export const SKIP_DEMO_PARSE_SIGN = ' pure'; // 有个空格
+export const ALWAYS_DEMO_PARSE_SIGN = ' demo'; // 有个空格
 
 // workaround to import pure esm module
 (async () => {
@@ -53,9 +55,9 @@ function getCodeLang(node: Element, opts: IRehypeDemoOptions) {
     Array.isArray(node.properties?.className) &&
     (opts.resolve.codeBlockMode === 'passive'
       ? // passive mode
-        / demo/.test(String(node.data?.meta))
+        new RegExp(ALWAYS_DEMO_PARSE_SIGN).test(String(node.data?.meta))
       : // active mode (default)
-        !/ pure/.test(String(node.data?.meta)))
+        !new RegExp(SKIP_DEMO_PARSE_SIGN).test(String(node.data?.meta)))
   ) {
     // code block demo
     // ref: https://github.com/syntax-tree/mdast-util-to-hast/blob/b7623785f270b5225898d15327770327409878f8/lib/handlers/code.js#L23
