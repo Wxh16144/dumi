@@ -2,9 +2,7 @@ import { SourceCodeProps } from 'dumi/theme/builtins/SourceCode';
 import Tabs, { TabsProps } from 'rc-tabs';
 import toArray from 'rc-util/lib/Children/toArray';
 import React from 'react';
-
-// todo: 添加样式
-import 'rc-tabs/assets/index.css';
+import './index.less';
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 type Item = Unpacked<Required<TabsProps>['items']>;
@@ -32,7 +30,7 @@ function CodeGroup(props: React.PropsWithChildren) {
     };
   });
 
-  return <Tabs items={items} />;
+  return <Tabs className="dumi-default-code-group" items={items} />;
 }
 
 export default CodeGroup;
