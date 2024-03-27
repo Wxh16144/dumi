@@ -40,15 +40,12 @@ export default function rehypeEnhancedTag(): Transformer<Root> {
         const highlightLines = node.children[0].data
           ?.highlightLines as number[];
 
-        const uniqueKey = Math.random().toString(36).substring(7);
-
         parent!.children.splice(i!, 1, {
           type: 'element',
           tagName: 'SourceCode',
           properties: {
             ...rehypeCodeMeta(node.children[0].data?.meta as string),
             lang,
-            key: uniqueKey,
           },
           data: node.children[0].data,
           JSXAttributes: [

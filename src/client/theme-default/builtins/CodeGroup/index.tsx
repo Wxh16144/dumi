@@ -14,16 +14,15 @@ function CodeGroup(props: React.PropsWithChildren) {
   const usefulChildren = toArray(children).filter(
     (child) =>
       typeof child === 'object' &&
-      child.key &&
       typeof child.type === 'function' &&
       child.type?.name === SourceCode.name,
   ) as React.ReactElement<SourceCodeProps>[];
 
-  const items = usefulChildren.map<Item>((child) => {
+  const items = usefulChildren.map<Item>((child, idx) => {
     const { lang, title } = child.props ?? {};
 
     return {
-      key: child.key as string,
+      key: String(child.key ?? idx),
       label: title || lang || 'txt', // fallback to txt if no lang and title
       children: child,
     };
