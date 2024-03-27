@@ -11,14 +11,12 @@ type SourceCodeProps = Parameters<typeof SourceCode>[0];
 function CodeGroup(props: React.PropsWithChildren) {
   const { children } = props;
 
-  const usefulChildren = toArray(children).filter((child) =>
-    [
-      typeof child === 'object',
-      typeof child?.type === 'function',
-      // child?.type.displayName === 'SourceCode',
-      // child?.type.name === 'SourceCode',
-      child?.key,
-    ].every(Boolean),
+  const usefulChildren = toArray(children).filter(
+    (child) =>
+      typeof child === 'object' &&
+      child.key &&
+      typeof child.type === 'function' &&
+      child.type?.name === SourceCode.name,
   ) as React.ReactElement<SourceCodeProps>[];
 
   const items = usefulChildren.map<Item>((child) => {
@@ -26,7 +24,7 @@ function CodeGroup(props: React.PropsWithChildren) {
 
     return {
       key: child.key as string,
-      label: [title, lang, 'txt'].find(Boolean),
+      label: title || lang || 'txt', // fallback to txt if no lang and title
       children: child,
     };
   });
