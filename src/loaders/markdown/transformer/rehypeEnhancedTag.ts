@@ -15,12 +15,12 @@ let toString: typeof import('hast-util-to-string').toString;
  * [借鉴 vitepress 的实现](https://github.com/vuejs/vitepress/blob/5811b626576ec4569fa0079d921b8e328d87ca91/src/node/markdown/plugins/snippet.ts)
  *
  * - [标题]
- *
- * 后面有需求再借鉴, 读书人的事怎么能叫~抄袭~呢 :)
  */
 const rawMetaRE = /\[(.+)\]/;
 
 function rehypeCodeMeta(meta: string) {
+  if (typeof meta !== 'string') return {};
+
   const [title] = (rawMetaRE.exec(meta.trim()) || []).slice(1);
 
   return { title };
@@ -46,7 +46,7 @@ export default function rehypeEnhancedTag(): Transformer<Root> {
           type: 'element',
           tagName: 'SourceCode',
           properties: {
-            ...rehypeCodeMeta((node.children[0].data?.meta as string) || ''),
+            ...rehypeCodeMeta(node.children[0].data?.meta as string),
             lang,
             key: uniqueKey,
           },
