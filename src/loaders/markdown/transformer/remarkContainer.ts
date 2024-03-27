@@ -1,6 +1,6 @@
 import type { Code, Root } from 'mdast';
 import type { Transformer } from 'unified';
-import { ALWAYS_DEMO_PARSE_SIGN, SKIP_DEMO_PARSE_SIGN } from './rehypeDemo';
+import { SKIP_DEMO_PARSE_SIGN } from './rehypeDemo';
 
 let visit: typeof import('unist-util-visit').visit;
 let SKIP: typeof import('unist-util-visit').SKIP;
@@ -61,12 +61,14 @@ export default function remarkContainer(this: any): Transformer<Root> {
       if (node.name === CODE_GROUP_SPECIFIER) {
         const codeChildren = node.children
           .filter((child): child is Code => child.type === 'code')
-          .map((child) => {
-            child.meta = (child.meta || '')
-              .replace(new RegExp(ALWAYS_DEMO_PARSE_SIGN, 'g'), '')
-              .concat(SKIP_DEMO_PARSE_SIGN);
-            return child;
-          });
+          .map((child) => ({
+            ...child,
+            data: {
+              ...child.data,
+              //  dumi 默认会编译有关联技术栈的代码块, 标记为不需要编译
+              [SKIP_DEMO_PARSE_SIGN]: true,
+            },
+          }));
 
         parent!.children.splice(
           i!,
