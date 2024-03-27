@@ -255,11 +255,11 @@ npm install -D dumi
 \`\`\`
 
 \`\`\`bash [yarn]
-yarn install -D dumi
+yarn add -D dumi
 \`\`\`
 
 \`\`\`bash [pnpm]
-pnpm install -D dumi
+pnpm add -D dumi
 \`\`\`
 
 \`\`\`ts [.dumirc.ts]
@@ -284,11 +284,11 @@ npm install -D dumi
 ```
 
 ```bash [yarn]
-yarn install -D dumi
+yarn add -D dumi
 ```
 
 ```bash [pnpm]
-pnpm install -D dumi
+pnpm add -D dumi
 ```
 
 ```ts [.dumirc.ts]
