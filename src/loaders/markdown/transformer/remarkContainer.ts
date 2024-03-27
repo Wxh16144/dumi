@@ -15,8 +15,8 @@ const CODE_GROUP_SPECIFIER = 'code-group';
 })();
 
 // transform attributes to string
-const transformAttributes = (attributes: Record<string, string | null>) =>
-  Object.entries(attributes).reduce<string>(
+const transformAttributes = (attributes?: Record<string, string | null>) =>
+  Object.entries(attributes ?? {}).reduce<string>(
     (ret, [name, value]) => `${ret} ${value ? `${name}="${value}"` : name}`,
     '',
   );
@@ -37,15 +37,14 @@ export default function remarkContainer(this: any): Transformer<Root> {
       if (node.type !== 'containerDirective') return CONTINUE;
 
       if (VALID_CONTAINER_TYPES.includes(node.name)) {
+        const attrs = transformAttributes(node.attributes);
         // replace directive node with container node
         parent!.children.splice(
           i!,
           1,
           {
             type: 'html',
-            value: `<Container type="${node.name}" ${transformAttributes(
-              node.attributes ?? {},
-            )}>`,
+            value: `<Container type="${node.name}" ${attrs}>`,
             position: node.position,
           },
           ...(node.children || []).concat({
@@ -75,7 +74,7 @@ export default function remarkContainer(this: any): Transformer<Root> {
           1,
           {
             type: 'html',
-            value: `<CodeGroup ${transformAttributes(node.attributes ?? {})}>`,
+            value: `<CodeGroup>`,
             position: node.position,
           },
           ...codeChildren,
